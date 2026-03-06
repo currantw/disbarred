@@ -5,8 +5,18 @@
   "description": "Hide/unhide elements on websites with custom keyboard shortcuts",
   "permissions": ["storage"],
   "host_permissions": ["https://github.com/*/*"],
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
   },
   "content_scripts": [
     {
