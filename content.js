@@ -16,7 +16,7 @@ chrome.storage.onChanged.addListener((changes) => {
 
 // Find the sidebar element
 function getSidebar() {
-  return document.querySelector('#pr-conversation-sidebar');
+  return document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="end"]');
 }
 
 // Toggle sidebar visibility
