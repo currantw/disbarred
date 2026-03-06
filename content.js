@@ -1,6 +1,7 @@
 const DEFAULT_SHORTCUT = ']';
 let shortcut = DEFAULT_SHORTCUT;
-let sidebarHidden = false;
+let rightSidebarHidden = false;
+let leftSidebarHidden = false;
 
 // Load shortcut from storage
 chrome.storage.sync.get(['githubSidebarShortcut'], (result) => {
@@ -14,17 +15,26 @@ chrome.storage.onChanged.addListener((changes) => {
   }
 });
 
-// Toggle sidebar visibility
-function toggleSidebar() {
+// Toggle right sidebar (Conversation tab)
+function toggleRightSidebar() {
   const sidebar = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="end"]');
   const mainContent = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="start"]');
   if (!sidebar) return;
 
-  sidebarHidden = !sidebarHidden;
-  sidebar.style.display = sidebarHidden ? 'none' : '';
+  rightSidebarHidden = !rightSidebarHidden;
+  sidebar.style.display = rightSidebarHidden ? 'none' : '';
   if (mainContent) {
-    mainContent.style.maxWidth = sidebarHidden ? '100%' : '';
+    mainContent.style.maxWidth = rightSidebarHidden ? '100%' : '';
   }
+}
+
+// Toggle left sidebar (Files changed tab)
+function toggleLeftSidebar() {
+  const sidebar = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="start"]');
+  if (!sidebar) return;
+
+  leftSidebarHidden = !leftSidebarHidden;
+  sidebar.style.display = leftSidebarHidden ? 'none' : '';
 }
 
 // Listen for keyboard shortcuts
@@ -34,8 +44,11 @@ document.addEventListener('keydown', (e) => {
     return;
   }
 
-  if (e.key === shortcut) {
+  if (e.key === ']') {
     e.preventDefault();
-    toggleSidebar();
+    toggleRightSidebar();
+  } else if (e.key === '[') {
+    e.preventDefault();
+    toggleLeftSidebar();
   }
 });
