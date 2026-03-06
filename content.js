@@ -16,7 +16,30 @@ chrome.storage.onChanged.addListener((changes) => {
 
 // Find the sidebar element
 function getSidebar() {
-  return document.querySelector('.Layout-sidebar');
+  // Try multiple possible selectors
+  const selectors = [
+    '.Layout-sidebar',
+    '[data-target="pull-request-sidebar"]',
+    '.discussion-sidebar',
+    'aside.BorderGrid-cell',
+    '.js-discussion-sidebar'
+  ];
+  
+  for (const selector of selectors) {
+    const element = document.querySelector(selector);
+    if (element) {
+      console.log('Disbarred: Found sidebar with selector:', selector);
+      return element;
+    }
+  }
+  
+  console.log('Disbarred: No sidebar found. Available elements:', {
+    layoutSidebar: document.querySelectorAll('.Layout-sidebar').length,
+    borderGrid: document.querySelectorAll('.BorderGrid-cell').length,
+    discussionSidebar: document.querySelectorAll('.discussion-sidebar').length
+  });
+  
+  return null;
 }
 
 // Toggle sidebar visibility
