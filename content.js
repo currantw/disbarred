@@ -14,18 +14,17 @@ chrome.storage.onChanged.addListener((changes) => {
   }
 });
 
-// Find the sidebar element
-function getSidebar() {
-  return document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="end"]');
-}
-
 // Toggle sidebar visibility
 function toggleSidebar() {
-  const sidebar = getSidebar();
+  const sidebar = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="end"]');
+  const mainContent = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="start"]');
   if (!sidebar) return;
 
   sidebarHidden = !sidebarHidden;
   sidebar.style.display = sidebarHidden ? 'none' : '';
+  if (mainContent) {
+    mainContent.style.maxWidth = sidebarHidden ? '100%' : '';
+  }
 }
 
 // Listen for keyboard shortcuts
