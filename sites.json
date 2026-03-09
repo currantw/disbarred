@@ -1,0 +1,26 @@
+{
+  "github.com": {
+    "icon": "icons/github.svg",
+    "sidebars": {
+      "left": {
+        "selector": ".prc-PageLayout-PaneWrapper-pHPop[data-position=\"start\"]",
+        "shortcut": "["
+      },
+      "right": {
+        "selector": ".prc-PageLayout-PaneWrapper-pHPop[data-position=\"end\"]",
+        "shortcut": "]",
+        "expandMainContent": true,
+        "mainContentSelector": ".prc-PageLayout-PaneWrapper-pHPop[data-position=\"start\"]"
+      }
+    }
+  },
+  "mail.google.com": {
+    "icon": "icons/gmail.svg",
+    "sidebars": {
+      "left": {
+        "selector": "div[role=\"navigation\"]",
+        "shortcut": "["
+      }
+    }
+  }
+}

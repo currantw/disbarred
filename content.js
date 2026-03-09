@@ -1,54 +1,57 @@
-const DEFAULT_SHORTCUT = ']';
-let shortcut = DEFAULT_SHORTCUT;
-let rightSidebarHidden = false;
-let leftSidebarHidden = false;
+let siteConfigs = {};
+let customShortcuts = {};
+const sidebarStates = {};
 
-// Load shortcut from storage
-chrome.storage.sync.get(['githubSidebarShortcut'], (result) => {
-  shortcut = result.githubSidebarShortcut || DEFAULT_SHORTCUT;
+// Load configurations
+Promise.all([
+  fetch(chrome.runtime.getURL('sites.json')).then(r => r.json()),
+  chrome.storage.sync.get(['customShortcuts'])
+]).then(([configs, storage]) => {
+  siteConfigs = configs;
+  customShortcuts = storage.customShortcuts || {};
+  bindShortcuts();
 });
 
-// Listen for storage changes
+// Listen for shortcut changes
 chrome.storage.onChanged.addListener((changes) => {
-  if (changes.githubSidebarShortcut) {
-    shortcut = changes.githubSidebarShortcut.newValue;
+  if (changes.customShortcuts) {
+    customShortcuts = changes.customShortcuts.newValue || {};
+    Mousetrap.reset();
+    bindShortcuts();
   }
 });
 
-// Toggle right sidebar (Conversation tab)
-function toggleRightSidebar() {
-  const sidebar = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="end"]');
-  const mainContent = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="start"]');
-  if (!sidebar) return;
+function getShortcut(hostname, position) {
+  const key = `${hostname}.${position}`;
+  return customShortcuts[key] || siteConfigs[hostname]?.sidebars[position]?.shortcut;
+}
 
-  rightSidebarHidden = !rightSidebarHidden;
-  sidebar.style.display = rightSidebarHidden ? 'none' : '';
-  if (mainContent) {
-    mainContent.style.maxWidth = rightSidebarHidden ? '100%' : '';
+function toggleSidebar(position, config) {
+  const element = document.querySelector(config.selector);
+  if (!element) return;
+
+  const key = `${window.location.hostname}-${position}`;
+  sidebarStates[key] = !sidebarStates[key];
+  
+  element.style.display = sidebarStates[key] ? 'none' : '';
+  
+  if (config.expandMainContent && config.mainContentSelector) {
+    const mainContent = document.querySelector(config.mainContentSelector);
+    if (mainContent) mainContent.style.maxWidth = sidebarStates[key] ? '100%' : '';
   }
 }
 
-// Toggle left sidebar (Files changed tab)
-function toggleLeftSidebar() {
-  const sidebar = document.querySelector('.prc-PageLayout-PaneWrapper-pHPop[data-position="start"]');
-  if (!sidebar) return;
+function bindShortcuts() {
+  const hostname = window.location.hostname;
+  const siteConfig = siteConfigs[hostname];
+  if (!siteConfig) return;
 
-  leftSidebarHidden = !leftSidebarHidden;
-  sidebar.style.display = leftSidebarHidden ? 'none' : '';
+  for (const [position, config] of Object.entries(siteConfig.sidebars)) {
+    const shortcut = getShortcut(hostname, position);
+    Mousetrap.bind(shortcut, (e) => {
+      e.preventDefault();
+      toggleSidebar(position, config);
+      return false;
+    });
+  }
 }
-
-// Listen for keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  // Don't trigger if user is typing in an input/textarea
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-    return;
-  }
-
-  if (e.key === ']') {
-    e.preventDefault();
-    toggleRightSidebar();
-  } else if (e.key === '[') {
-    e.preventDefault();
-    toggleLeftSidebar();
-  }
-});
