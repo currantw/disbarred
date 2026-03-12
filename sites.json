@@ -3,14 +3,12 @@
     "icon": "icons/github.svg",
     "sidebars": {
       "left": {
-        "selector": ".prc-PageLayout-PaneWrapper-pHPop[data-position=\"start\"]",
+        "selector": "[data-position=\"start\"]",
         "shortcut": "["
       },
       "right": {
-        "selector": ".prc-PageLayout-PaneWrapper-pHPop[data-position=\"end\"]",
-        "shortcut": "]",
-        "expandMainContent": true,
-        "mainContentSelector": ".prc-PageLayout-PaneWrapper-pHPop[data-position=\"start\"]"
+        "selector": "#pr-conversation-sidebar",
+        "shortcut": "]"
       }
     }
   },

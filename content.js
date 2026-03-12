@@ -35,9 +35,19 @@ function toggleSidebar(position, config) {
   
   element.style.display = sidebarStates[key] ? 'none' : '';
   
-  if (config.expandMainContent && config.mainContentSelector) {
-    const mainContent = document.querySelector(config.mainContentSelector);
-    if (mainContent) mainContent.style.maxWidth = sidebarStates[key] ? '100%' : '';
+  // Find the grid/flex container and force it to single column
+  let container = element.parentElement;
+  while (container && container !== document.body) {
+    const style = getComputedStyle(container);
+    if (style.display === 'grid') {
+      container.style.gridTemplateColumns = sidebarStates[key] ? '1fr' : '';
+      break;
+    }
+    if (style.display === 'flex') {
+      container.style.flexDirection = sidebarStates[key] ? 'column' : '';
+      break;
+    }
+    container = container.parentElement;
   }
 }
 
